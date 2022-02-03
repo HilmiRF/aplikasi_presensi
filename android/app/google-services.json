@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "311234347031",
+    "project_id": "aplikasi-presensi-bf763",
+    "storage_bucket": "aplikasi-presensi-bf763.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:311234347031:android:28499faad70c80b10e1c52",
+        "android_client_info": {
+          "package_name": "com.example.aplikasi_presensi"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "311234347031-0k3fkd79oevs0a5dtqa8ags16dim5vot.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAol9XWDMGoIVUGY3PCmruH_Ihmj8Q0EZ4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "311234347031-0k3fkd79oevs0a5dtqa8ags16dim5vot.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
