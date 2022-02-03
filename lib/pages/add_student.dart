@@ -133,7 +133,7 @@ class _AddStudentState extends State<AddStudent> {
           stream: matkul,
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
-              return Text("Loading.....");
+              return Text("Loading....");
             }
             final data = snapshot.requireData;
             List<DropdownMenuItem<String>> matkulItems = [];
