@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:aplikasi_presensi/themes.dart';
+import 'package:aplikasi_presensi/widgets/bottom_nav.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -20,43 +21,7 @@ class _ClassPageState extends State<ClassPage> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        bottomNavigationBar: ClipRRect(
-          borderRadius: BorderRadius.circular(20),
-          child: BottomNavigationBar(
-            backgroundColor: kWhiteColor,
-            showSelectedLabels: false,
-            showUnselectedLabels: false,
-            onTap: (value) {
-              if (value == 0) {
-                Navigator.pushNamedAndRemoveUntil(
-                    context, '/sheet', (route) => false);
-              } else if (value == 2) {
-                Navigator.pushNamedAndRemoveUntil(
-                    context, '/student', (route) => false);
-              }
-            },
-            items: [
-              BottomNavigationBarItem(
-                  icon: Image.asset(
-                    'assets/sheets.png',
-                    width: 24,
-                  ),
-                  label: 'sheets'),
-              BottomNavigationBarItem(
-                  icon: Image.asset(
-                    'assets/class.png',
-                    width: 24,
-                  ),
-                  label: 'class'),
-              BottomNavigationBarItem(
-                  icon: Image.asset(
-                    'assets/student.png',
-                    width: 24,
-                  ),
-                  label: 'student'),
-            ],
-          ),
-        ),
+        bottomNavigationBar: BottomNav(),
         backgroundColor: kWhiteGreyColor,
         body: ListView(
           scrollDirection: Axis.vertical,

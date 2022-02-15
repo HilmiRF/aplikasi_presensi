@@ -1,4 +1,5 @@
 import 'package:aplikasi_presensi/themes.dart';
+import 'package:aplikasi_presensi/widgets/bottom_nav.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
@@ -18,46 +19,7 @@ class _AddStudentState extends State<AddStudent> {
     return SafeArea(
       child: Scaffold(
         backgroundColor: kWhiteGreyColor,
-        bottomNavigationBar: ClipRRect(
-          borderRadius: BorderRadius.circular(20),
-          child: BottomNavigationBar(
-            backgroundColor: kWhiteColor,
-            showSelectedLabels: false,
-            showUnselectedLabels: false,
-            onTap: (value) {
-              if (value == 0) {
-                Navigator.pushNamedAndRemoveUntil(
-                    context, '/sheet', (route) => false);
-              } else if (value == 1) {
-                Navigator.pushNamedAndRemoveUntil(
-                    context, '/class', (route) => false);
-              } else {
-                Navigator.pushNamedAndRemoveUntil(
-                    context, '/student', (route) => false);
-              }
-            },
-            items: [
-              BottomNavigationBarItem(
-                  icon: Image.asset(
-                    'assets/sheets.png',
-                    width: 24,
-                  ),
-                  label: 'sheets'),
-              BottomNavigationBarItem(
-                  icon: Image.asset(
-                    'assets/class.png',
-                    width: 24,
-                  ),
-                  label: 'class'),
-              BottomNavigationBarItem(
-                  icon: Image.asset(
-                    'assets/student.png',
-                    width: 24,
-                  ),
-                  label: 'student'),
-            ],
-          ),
-        ),
+        bottomNavigationBar: BottomNav(),
         body: ListView(
           padding: EdgeInsets.symmetric(
             horizontal: 24,

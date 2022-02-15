@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:aplikasi_presensi/themes.dart';
+import 'package:aplikasi_presensi/widgets/bottom_nav.dart';
 import 'package:flutter/material.dart';
 import 'package:nfc_in_flutter/nfc_in_flutter.dart';
 import 'package:nfc_manager/nfc_manager.dart';
@@ -26,46 +27,7 @@ class _RegisterStudentState extends State<RegisterStudent> {
     return SafeArea(
       child: Scaffold(
         backgroundColor: kWhiteGreyColor,
-        bottomNavigationBar: ClipRRect(
-          borderRadius: BorderRadius.circular(20),
-          child: BottomNavigationBar(
-            backgroundColor: kWhiteColor,
-            showSelectedLabels: false,
-            showUnselectedLabels: false,
-            onTap: (value) {
-              if (value == 0) {
-                Navigator.pushNamedAndRemoveUntil(
-                    context, '/sheet', (route) => false);
-              } else if (value == 1) {
-                Navigator.pushNamedAndRemoveUntil(
-                    context, '/class', (route) => false);
-              } else {
-                Navigator.pushNamedAndRemoveUntil(
-                    context, '/student', (route) => false);
-              }
-            },
-            items: [
-              BottomNavigationBarItem(
-                  icon: Image.asset(
-                    'assets/sheets.png',
-                    width: 24,
-                  ),
-                  label: 'sheets'),
-              BottomNavigationBarItem(
-                  icon: Image.asset(
-                    'assets/class.png',
-                    width: 24,
-                  ),
-                  label: 'class'),
-              BottomNavigationBarItem(
-                  icon: Image.asset(
-                    'assets/student.png',
-                    width: 24,
-                  ),
-                  label: 'student'),
-            ],
-          ),
-        ),
+        bottomNavigationBar: BottomNav(),
         body: ListView(
           padding: EdgeInsets.symmetric(
             horizontal: 24,
