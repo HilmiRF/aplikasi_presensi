@@ -24,8 +24,12 @@ class _SheetsPageState extends State<SheetsPage> {
   ValueNotifier<dynamic> result = ValueNotifier(null);
   String valueNama = '';
   String valueNIM = '';
+  String valueNama1 = '';
+  String valueNIM1 = '';
   String dropdownValue = '';
   String holder = '';
+  final TextEditingController namaController = TextEditingController();
+  final TextEditingController nimController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -168,6 +172,7 @@ class _SheetsPageState extends State<SheetsPage> {
           showDialog(
             context: context,
             builder: (_) => AlertDialog(
+              backgroundColor: kLineDarkColor,
               title: Text(
                 "Place student card on the\nback of the phone",
                 style: blackTextStyle.copyWith(
@@ -206,6 +211,135 @@ class _SheetsPageState extends State<SheetsPage> {
                     ),
                   ),
                 ),
+                SizedBox(
+                  height: 10,
+                ),
+                Container(
+                  width: double.infinity,
+                  height: 56,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(14),
+                    color: kBlackColor,
+                  ),
+                  child: TextButton(
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder: (_) => AlertDialog(
+                          backgroundColor: kLineDarkColor,
+                          title: Text(
+                            "Add Manually",
+                            style: blackTextStyle.copyWith(
+                              fontSize: 18,
+                              fontWeight: semiBold,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          actions: [
+                            Container(
+                              margin: EdgeInsets.only(
+                                top: 10,
+                              ),
+                              padding: EdgeInsets.all(18),
+                              width: double.infinity,
+                              height: 56,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(14),
+                                color: kWhiteColor,
+                              ),
+                              child: TextFormField(
+                                controller: namaController,
+                                decoration: InputDecoration.collapsed(
+                                  hintText: 'Nama Mahasiswa',
+                                  hintStyle: greyTextStyle.copyWith(
+                                    fontSize: 14,
+                                    fontWeight: semiBold,
+                                  ),
+                                ),
+                                validator: (value) {
+                                  if (value!.isEmpty) {
+                                    return 'Nama Mahasiswa';
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ),
+                            Container(
+                              margin: EdgeInsets.only(
+                                top: 10,
+                              ),
+                              padding: EdgeInsets.all(18),
+                              width: double.infinity,
+                              height: 56,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(14),
+                                color: kWhiteColor,
+                              ),
+                              child: TextFormField(
+                                controller: nimController,
+                                decoration: InputDecoration.collapsed(
+                                  hintText: 'NIM',
+                                  hintStyle: greyTextStyle.copyWith(
+                                    fontSize: 14,
+                                    fontWeight: semiBold,
+                                  ),
+                                ),
+                                validator: (value) {
+                                  if (value!.isEmpty) {
+                                    return 'NIM';
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Container(
+                              width: double.infinity,
+                              height: 56,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(14),
+                                color: kBlackColor,
+                              ),
+                              child: TextButton(
+                                onPressed: () async {
+                                  valueNama1 = namaController.text;
+                                  valueNIM1 = nimController.text;
+                                  FirebaseFirestore.instance
+                                      .collection(dropdownValue)
+                                      .doc()
+                                      .set({
+                                    'Nama & NIM': valueNama1 + ', ' + valueNIM1,
+                                    'Waktu Absen': Timestamp.now()
+                                  }, SetOptions(merge: true)).then((value) {});
+                                  Navigator.of(context).pop();
+                                },
+                                child: Text(
+                                  'Done',
+                                  style: whiteTextStyle.copyWith(
+                                    fontSize: 18,
+                                    fontWeight: semiBold,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                    child: Text(
+                      'Add Manually',
+                      style: whiteTextStyle.copyWith(
+                        fontSize: 18,
+                        fontWeight: semiBold,
+                      ),
+                    ),
+                  ),
+                ),
               ],
             ),
           );
@@ -236,11 +370,9 @@ class _SheetsPageState extends State<SheetsPage> {
         for (NDEFRecord record in message.records) {
           print(
               "Record '${record.id ?? "[NO ID]"}' with TNF '${record.tnf}', type '${record.type}', payload '${record.payload}' and data '${record.data}' and language code '${record.languageCode}'");
-          FirebaseFirestore.instance
-              .collection(dropdownValue)
-              .doc()
-              .set({'Nama & NIM': record.data, 'Waktu Absen': Timestamp.now()},
-                  SetOptions(merge: true)).then((value) {});
+          FirebaseFirestore.instance.collection(dropdownValue).doc().set(
+              {'Nama & NIM': record.data, 'Waktu Absen': Timestamp.now()},
+              SetOptions(merge: true)).then((value) {});
           print(record.data);
         }
       }, onError: (error) {

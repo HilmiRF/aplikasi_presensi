@@ -8,7 +8,7 @@ class BottomNav extends StatefulWidget {
   _BottomNavState createState() => _BottomNavState();
 }
 
-int currentIndex = 0;
+int currentIndex = 2;
 
 class _BottomNavState extends State<BottomNav> {
   // void _onItemTapped(int index) {

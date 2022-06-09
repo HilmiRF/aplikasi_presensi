@@ -112,7 +112,7 @@ class _RegisterStudentState extends State<RegisterStudent> {
         ),
         validator: (value) {
           if (value!.isEmpty) {
-            return 'NIM';
+            return 'Nama Mahasiswa';
           }
           return null;
         },

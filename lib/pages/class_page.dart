@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'package:aplikasi_presensi/pages/detail_kelas_page.dart';
 import 'package:aplikasi_presensi/themes.dart';
 import 'package:aplikasi_presensi/widgets/bottom_nav.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -17,6 +18,15 @@ class _ClassPageState extends State<ClassPage> {
   final Stream<QuerySnapshot> matkul =
       FirebaseFirestore.instance.collection('matkul').snapshots();
 
+  navigateToDetail(DocumentSnapshot post) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => DetailKelas(
+                  post: post,
+                )));
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -32,7 +42,6 @@ class _ClassPageState extends State<ClassPage> {
           children: [
             title(),
             classList(),
-            addClass(),
           ],
         ),
       ),
@@ -88,7 +97,7 @@ class _ClassPageState extends State<ClassPage> {
   Widget classList() {
     return Container(
       width: double.infinity,
-      height: 320,
+      height: 400,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(14),
         color: kLineDarkColor,
@@ -119,12 +128,35 @@ class _ClassPageState extends State<ClassPage> {
               itemBuilder: (context, index) {
                 return Card(
                   child: ListTile(
-                    title: Text(
-                      data.docs[index]['nama_kelas'],
-                      style: blackTextStyle.copyWith(
-                        fontSize: 16,
-                        fontWeight: semiBold,
+                    title: TextButton(
+                      child: Text(
+                        data.docs[index]['nama_kelas'],
+                        style: blackTextStyle.copyWith(
+                          fontSize: 16,
+                          fontWeight: semiBold,
+                        ),
                       ),
+                      onPressed: () {
+                        navigateToDetail(data.docs[index]);
+                        // buat ngecek
+                        print(data.docs[index].id);
+                        // buat ngecek
+                        FirebaseFirestore.instance
+                            .collection("matkul")
+                            .get()
+                            .then((querySnapshot) {
+                          querySnapshot.docs.forEach((result) {
+                            print(result.data()['nama_kelas']);
+                          });
+                        });
+                        // Navigator.pushNamed(
+                        //   context,
+                        //   '/detailKelas',
+                        //   arguments: matkulArgumentRoute(
+                        //     idMatkul: data.docs[index].id,
+                        //   ),
+                        // );
+                      },
                     ),
                   ),
                 );
@@ -161,4 +193,9 @@ class _ClassPageState extends State<ClassPage> {
       ),
     );
   }
+}
+
+class matkulArgumentRoute {
+  final String idMatkul;
+  matkulArgumentRoute({required this.idMatkul});
 }
