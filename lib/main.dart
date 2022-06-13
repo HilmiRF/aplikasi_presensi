@@ -5,8 +5,10 @@ import 'package:aplikasi_presensi/pages/add_class.dart';
 import 'package:aplikasi_presensi/pages/add_student.dart';
 import 'package:aplikasi_presensi/pages/class_page.dart';
 import 'package:aplikasi_presensi/pages/detail_kelas_page.dart';
+import 'package:aplikasi_presensi/pages/lecturer_page.dart';
 import 'package:aplikasi_presensi/pages/login_page.dart';
 import 'package:aplikasi_presensi/pages/register_student.dart';
+import 'package:aplikasi_presensi/pages/rekap_presensi_page.dart';
 import 'package:aplikasi_presensi/pages/sheets_page.dart';
 import 'package:aplikasi_presensi/pages/splash_screen.dart';
 import 'package:aplikasi_presensi/pages/student_page.dart';
@@ -38,6 +40,8 @@ class MyApp extends StatelessWidget {
         '/addStudent': (context) => AddStudent(),
         '/registerStudent': (context) => RegisterStudent(),
         '/addClass': (context) => AddClass(),
+        '/lecturer': (context) => LecturerPage(),
+        // '/rekap' : (context) => RekapPresensiPage(),
       },
     );
   }

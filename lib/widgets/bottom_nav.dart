@@ -61,7 +61,7 @@ class _BottomNavState extends State<BottomNav> {
               break;
             case 2:
               Navigator.pushNamedAndRemoveUntil(
-                  context, '/student', (route) => false);
+                  context, '/lecturer', (route) => false);
               break;
           }
 

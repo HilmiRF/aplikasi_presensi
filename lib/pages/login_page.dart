@@ -235,7 +235,7 @@ class _LoginPageState extends State<LoginPage> {
                 toastDuration: Duration(seconds: 2),
               );
             } else {
-              Navigator.pushNamed(context, '/student');
+              Navigator.pushNamed(context, '/lecturer');
             }
           });
         },

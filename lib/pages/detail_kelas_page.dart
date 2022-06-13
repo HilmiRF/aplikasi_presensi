@@ -1,4 +1,5 @@
 import 'package:aplikasi_presensi/matkul_data_api.dart';
+import 'package:aplikasi_presensi/pages/rekap_presensi_page.dart';
 import 'package:aplikasi_presensi/themes.dart';
 import 'package:aplikasi_presensi/widgets/bottom_nav.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -14,6 +15,7 @@ class DetailKelas extends StatefulWidget {
 
 class _DetailKelasState extends State<DetailKelas> {
   final DataRepository repository = DataRepository();
+  String namaKelas = '';
   final Stream<QuerySnapshot> matkul =
       FirebaseFirestore.instance.collection('matkul').snapshots();
   @override
@@ -42,6 +44,7 @@ class _DetailKelasState extends State<DetailKelas> {
   }
 
   Widget title() {
+    namaKelas = widget.post['nama_kelas'];
     return Container(
       margin: EdgeInsets.only(
         top: 38,
@@ -50,7 +53,7 @@ class _DetailKelasState extends State<DetailKelas> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            widget.post['nama_kelas'],
+            namaKelas,
             style: blackTextStyle.copyWith(
               fontSize: 20,
               fontWeight: FontWeight.bold,
@@ -244,7 +247,15 @@ class _DetailKelasState extends State<DetailKelas> {
         color: kBlackColor,
       ),
       child: TextButton(
-        onPressed: () {},
+        onPressed: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => RekapPresensiPage(
+                  namaKelas: namaKelas,
+                ),
+              ));
+        },
         child: Text(
           'Lihat Rekap Presensi',
           style: whiteTextStyle.copyWith(

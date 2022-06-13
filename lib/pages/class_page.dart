@@ -20,11 +20,13 @@ class _ClassPageState extends State<ClassPage> {
 
   navigateToDetail(DocumentSnapshot post) {
     Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => DetailKelas(
-                  post: post,
-                )));
+      context,
+      MaterialPageRoute(
+        builder: (context) => DetailKelas(
+          post: post,
+        ),
+      ),
+    );
   }
 
   @override
@@ -139,16 +141,16 @@ class _ClassPageState extends State<ClassPage> {
                       onPressed: () {
                         navigateToDetail(data.docs[index]);
                         // buat ngecek
-                        print(data.docs[index].id);
-                        // buat ngecek
-                        FirebaseFirestore.instance
-                            .collection("matkul")
-                            .get()
-                            .then((querySnapshot) {
-                          querySnapshot.docs.forEach((result) {
-                            print(result.data()['nama_kelas']);
-                          });
-                        });
+                        // print(data.docs[index].id);
+                        // // buat ngecek
+                        // FirebaseFirestore.instance
+                        //     .collection("matkul")
+                        //     .get()
+                        //     .then((querySnapshot) {
+                        //   querySnapshot.docs.forEach((result) {
+                        //     print(result.data()['nama_kelas']);
+                        //   });
+                        // });
                         // Navigator.pushNamed(
                         //   context,
                         //   '/detailKelas',
