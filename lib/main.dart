@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:aplikasi_presensi/authentication_services.dart';
 import 'package:aplikasi_presensi/model/detail_kelas.dart';
 import 'package:aplikasi_presensi/pages/add_class.dart';
 import 'package:aplikasi_presensi/pages/add_student.dart';
@@ -14,9 +15,11 @@ import 'package:aplikasi_presensi/pages/splash_screen.dart';
 import 'package:aplikasi_presensi/pages/student_page.dart';
 import 'package:aplikasi_presensi/themes.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,20 +32,48 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      routes: {
-        '/': (context) => SplashScreen(),
-        '/login': (context) => LoginPage(),
-        '/student': (context) => StudentPage(),
-        '/class': (context) => ClassPage(),
-        '/sheet': (context) => SheetsPage(),
-        '/addStudent': (context) => AddStudent(),
-        '/registerStudent': (context) => RegisterStudent(),
-        '/addClass': (context) => AddClass(),
-        '/lecturer': (context) => LecturerPage(),
-        // '/rekap' : (context) => RekapPresensiPage(),
-      },
+    return MultiProvider(
+      providers: [
+        Provider<AuthenticationService>(
+          create: (_) => AuthenticationService(FirebaseAuth.instance),
+        ),
+        StreamProvider(
+          create: (context) =>
+              context.read<AuthenticationService>().authStateChanges,
+          initialData: null,
+        ),
+      ],
+      child: MaterialApp(
+        // home: AuthenticationWrapper(),
+        debugShowCheckedModeBanner: false,
+        routes: {
+          '/': (context) => SplashScreen(),
+          '/authentication':(context) => AuthenticationWrapper(),
+          '/login': (context) => LoginPage(),
+          '/student': (context) => StudentPage(),
+          '/class': (context) => ClassPage(),
+          '/sheet': (context) => SheetsPage(),
+          '/addStudent': (context) => AddStudent(),
+          '/registerStudent': (context) => RegisterStudent(),
+          '/addClass': (context) => AddClass(),
+          '/lecturer': (context) => LecturerPage(),
+          // '/rekap' : (context) => RekapPresensiPage(),
+        },
+      ),
     );
+  }
+}
+
+class AuthenticationWrapper extends StatelessWidget {
+  const AuthenticationWrapper({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final firebaseUser = context.watch<User>();
+
+    if (firebaseUser != null) {
+      return LecturerPage();
+    }
+    return LoginPage();
   }
 }

@@ -1,6 +1,8 @@
+import 'package:aplikasi_presensi/authentication_services.dart';
 import 'package:flutter/material.dart';
 import 'package:aplikasi_presensi/themes.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -217,27 +219,10 @@ class _LoginPageState extends State<LoginPage> {
       ),
       child: TextButton(
         onPressed: () {
-          setState(() {
-            isLoading = true;
-          });
-
-          Future.delayed(Duration(seconds: 2), () {
-            setState(() {
-              isLoading = false;
-            });
-            if (passwordController.text != 'test123') {
-              setState(() {
-                isShowPasswordError = true;
-              });
-              fToast.showToast(
-                child: errorToast(),
-                gravity: ToastGravity.BOTTOM,
-                toastDuration: Duration(seconds: 2),
+          context.read<AuthenticationService>().signIn(
+                email: emailController.text,
+                password: passwordController.text,
               );
-            } else {
-              Navigator.pushNamed(context, '/lecturer');
-            }
-          });
         },
         child: isLoading
             ? CircularProgressIndicator(

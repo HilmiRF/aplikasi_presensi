@@ -1,7 +1,9 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:aplikasi_presensi/authentication_services.dart';
 import 'package:aplikasi_presensi/widgets/bottom_nav.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../themes.dart';
 
@@ -28,6 +30,7 @@ class _LecturerPageState extends State<LecturerPage> {
             title(),
             profile(),
             detail(),
+            signOut(),
           ],
         ),
       ),
@@ -162,6 +165,31 @@ class _LecturerPageState extends State<LecturerPage> {
               ],
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget signOut() {
+    return Container(
+      width: double.infinity,
+      height: 56,
+      margin: EdgeInsets.only(top: 32),
+      padding: EdgeInsets.only(),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(14),
+        color: kBlackColor,
+      ),
+      child: TextButton(
+        onPressed: () {
+          context.read<AuthenticationService>().signOut();
+        },
+        child: Text(
+          'Sign Out',
+          style: whiteTextStyle.copyWith(
+            fontSize: 18,
+            fontWeight: semiBold,
+          ),
         ),
       ),
     );
