@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors
+
 import 'package:aplikasi_presensi/authentication_services.dart';
 import 'package:flutter/material.dart';
 import 'package:aplikasi_presensi/themes.dart';

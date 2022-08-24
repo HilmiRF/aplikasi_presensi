@@ -1,3 +1,5 @@
+// ignore_for_file: await_only_futures
+
 import 'package:firebase_auth/firebase_auth.dart';
 
 class AuthenticationService {
@@ -8,7 +10,7 @@ class AuthenticationService {
   Stream<User?> get authStateChanges => _firebaseAuth.authStateChanges();
 
   Future<void> signOut() async {
-    await _firebaseAuth.signOut();
+    _firebaseAuth.signOut();
   }
 
   Future<String?> signIn(
@@ -20,5 +22,11 @@ class AuthenticationService {
     } on FirebaseAuthException catch (e) {
       return e.message;
     }
+  }
+
+  Future<String> getCurrentUID() async {
+    final User user = await _firebaseAuth.currentUser!;
+    final String uid = user.uid;
+    return uid;
   }
 }

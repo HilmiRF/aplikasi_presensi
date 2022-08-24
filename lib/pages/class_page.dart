@@ -1,9 +1,10 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, avoid_print
 
 import 'package:aplikasi_presensi/pages/detail_kelas_page.dart';
 import 'package:aplikasi_presensi/themes.dart';
 import 'package:aplikasi_presensi/widgets/bottom_nav.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 
@@ -14,9 +15,25 @@ class ClassPage extends StatefulWidget {
   State<ClassPage> createState() => _ClassPageState();
 }
 
+final FirebaseAuth auth = FirebaseAuth.instance;
+final User? user = auth.currentUser;
+final myUid = user?.uid;
+var matkul;
+late String mappedMatkul = '';
+
 class _ClassPageState extends State<ClassPage> {
-  final Stream<QuerySnapshot> matkul =
-      FirebaseFirestore.instance.collection('matkul').snapshots();
+  void initState() {
+    super.initState();
+    // myUid = getUid().toString();
+    matkul = getMatkul();
+    print(matkul);
+  }
+
+  final Stream<QuerySnapshot<Map<String, dynamic>>> kelas = FirebaseFirestore
+      .instance
+      .collection('matkul')
+      .where(FieldPath.documentId, whereIn: matkul)
+      .snapshots();
 
   navigateToDetail(DocumentSnapshot post) {
     Navigator.push(
@@ -109,7 +126,7 @@ class _ClassPageState extends State<ClassPage> {
       child: Scrollbar(
         radius: Radius.circular(50),
         child: StreamBuilder<QuerySnapshot>(
-          stream: matkul,
+          stream: kelas,
           builder: (
             BuildContext context,
             AsyncSnapshot<QuerySnapshot> snapshot,
@@ -194,6 +211,24 @@ class _ClassPageState extends State<ClassPage> {
         ),
       ),
     );
+  }
+
+  Future<List> getMatkul() async {
+    FirebaseFirestore.instance
+        .collection('dosen')
+        .where('uid', isEqualTo: myUid)
+        .get()
+        .then((QuerySnapshot querySnapshot) {
+      querySnapshot.docs.forEach((doc) {
+        setState(() {
+          matkul = doc['array_matkul'];
+        });
+        // imageUrl = doc['image_url'];
+      });
+    });
+    print(matkul);
+    print(myUid);
+    return matkul;
   }
 }
 

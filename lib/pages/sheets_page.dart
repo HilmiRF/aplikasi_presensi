@@ -5,6 +5,7 @@ import 'dart:async';
 import 'package:aplikasi_presensi/themes.dart';
 import 'package:aplikasi_presensi/widgets/bottom_nav.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:nfc_in_flutter/nfc_in_flutter.dart';
 import 'package:nfc_manager/nfc_manager.dart';
@@ -16,10 +17,26 @@ class SheetsPage extends StatefulWidget {
   State<SheetsPage> createState() => _SheetsPageState();
 }
 
+final FirebaseAuth auth = FirebaseAuth.instance;
+final User? user = auth.currentUser;
+final myUid = user?.uid;
+var matkul;
+
 class _SheetsPageState extends State<SheetsPage> {
+  void initState() {
+    super.initState();
+    // myUid = getUid().toString();
+    matkul = getMatkul();
+    print(matkul);
+  }
+
   StreamSubscription<NDEFMessage>? _stream;
-  final Stream<QuerySnapshot> matkul =
-      FirebaseFirestore.instance.collection('matkul').snapshots();
+  final Stream<QuerySnapshot<Map<String, dynamic>>> kelas = FirebaseFirestore
+      .instance
+      .collection('matkul')
+      .where(FieldPath.documentId, whereIn: matkul)
+      .snapshots();
+
   String? value;
   ValueNotifier<dynamic> result = ValueNotifier(null);
   String valueNama = '';
@@ -109,7 +126,7 @@ class _SheetsPageState extends State<SheetsPage> {
         color: kWhiteColor,
       ),
       child: StreamBuilder<QuerySnapshot>(
-          stream: matkul,
+          stream: kelas,
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
               return Text("Loading.....");
@@ -200,6 +217,7 @@ class _SheetsPageState extends State<SheetsPage> {
                   child: TextButton(
                     onPressed: () {
                       _stopScanning();
+                      NfcManager.instance.stopSession();
                       Navigator.of(context).pop();
                     },
                     child: Text(
@@ -344,6 +362,7 @@ class _SheetsPageState extends State<SheetsPage> {
             ),
           );
           getDropDownItem();
+          // _tagRead();
           _startScanning();
         },
         child: Text(
@@ -356,6 +375,12 @@ class _SheetsPageState extends State<SheetsPage> {
       ),
     );
   }
+
+  // void _startScanning() {
+  //   setState(() {
+  //     _stream = NFC.readNDEF().listen((NDEFMessage message) { })
+  //   });
+  // }
 
   void _startScanning() {
     setState(() {
@@ -394,6 +419,16 @@ class _SheetsPageState extends State<SheetsPage> {
     });
   }
 
+  // void _tagRead() {
+  //   NfcManager.instance.startSession(onDiscovered: (NfcTag tag) async {
+  //     result.value = tag.data;
+  //     FirebaseFirestore.instance.collection(dropdownValue).doc().set(
+  //       {'Nama & NIM': tag.data, 'Waktu Absen': Timestamp.now()},
+  //     SetOptions(merge: true)).then((value) {});
+  //     NfcManager.instance.stopSession();
+  //   });
+  // }
+
   void _stopScanning() {
     _stream?.cancel();
     setState(() {
@@ -405,5 +440,23 @@ class _SheetsPageState extends State<SheetsPage> {
     setState(() {
       holder = dropdownValue;
     });
+  }
+
+  Future<List> getMatkul() async {
+    FirebaseFirestore.instance
+        .collection('dosen')
+        .where('uid', isEqualTo: myUid)
+        .get()
+        .then((QuerySnapshot querySnapshot) {
+      querySnapshot.docs.forEach((doc) {
+        setState(() {
+          matkul = doc['array_matkul'];
+        });
+        // imageUrl = doc['image_url'];
+      });
+    });
+    print(matkul);
+    print(myUid);
+    return matkul;
   }
 }

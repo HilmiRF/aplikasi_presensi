@@ -2,8 +2,11 @@
 
 import 'package:aplikasi_presensi/authentication_services.dart';
 import 'package:aplikasi_presensi/widgets/bottom_nav.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 import '../themes.dart';
 
@@ -14,7 +17,22 @@ class LecturerPage extends StatefulWidget {
   State<LecturerPage> createState() => _LecturerPageState();
 }
 
+final FirebaseAuth auth = FirebaseAuth.instance;
+final User? user = auth.currentUser;
+final myUid = user?.uid;
+// String myUid = '';
+String imageUrl = '';
+String namaDosen = '';
+
 class _LecturerPageState extends State<LecturerPage> {
+  void initState() {
+    super.initState();
+    // myUid = getUid().toString();
+    imageUrl = getImageUrl().toString();
+    namaDosen = getNamaDosen().toString();
+  }
+
+  FirebaseStorage storage = FirebaseStorage.instance;
   final double profileHeight = 100;
   @override
   Widget build(BuildContext context) {
@@ -94,16 +112,18 @@ class _LecturerPageState extends State<LecturerPage> {
           CircleAvatar(
             radius: profileHeight / 2,
             backgroundColor: kWhiteColor,
-            backgroundImage: NetworkImage(
-              'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80',
-              scale: 6,
-            ),
+            backgroundImage: imageUrl.isEmpty
+                ? null
+                : NetworkImage(
+                    imageUrl,
+                    scale: 6,
+                  ),
           ),
           SizedBox(
             height: 14,
           ),
           Text(
-            "Lorep Ipsum S.Kom.",
+            namaDosen,
             style: blackTextStyle.copyWith(
               fontSize: 20,
               fontWeight: bold,
@@ -182,6 +202,7 @@ class _LecturerPageState extends State<LecturerPage> {
       ),
       child: TextButton(
         onPressed: () {
+          // await FirebaseAuth.instance.signOut();
           context.read<AuthenticationService>().signOut();
         },
         child: Text(
@@ -193,5 +214,50 @@ class _LecturerPageState extends State<LecturerPage> {
         ),
       ),
     );
+  }
+
+  Future<String> getImageUrl() async {
+    FirebaseFirestore.instance
+        .collection('dosen')
+        .where('uid', isEqualTo: myUid)
+        .get()
+        .then((QuerySnapshot querySnapshot) {
+      querySnapshot.docs.forEach((doc) {
+        setState(() {
+          imageUrl = doc['image_url'];
+        });
+        // imageUrl = doc['image_url'];
+      });
+    });
+    print(imageUrl);
+    print(myUid);
+    return imageUrl;
+  }
+
+  Future<String> getNamaDosen() async {
+    FirebaseFirestore.instance
+        .collection('dosen')
+        .where('uid', isEqualTo: myUid)
+        .get()
+        .then((QuerySnapshot querySnapshot) {
+      querySnapshot.docs.forEach((doc) {
+        setState(() {
+          namaDosen = doc['nama_dosen'].toString();
+        });
+        // imageUrl = doc['image_url'];
+      });
+    });
+    print(namaDosen);
+    print(myUid);
+    return namaDosen;
+  }
+
+  Future<String> getUid() async {
+    await FirebaseAuth.instance.authStateChanges().listen((User? user) {
+      if (user != null) {
+        print(user.uid);
+      }
+    });
+    return user!.uid;
   }
 }

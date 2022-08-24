@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:aplikasi_presensi/themes.dart';
 import 'package:aplikasi_presensi/widgets/bottom_nav.dart';
 import 'package:flutter/material.dart';
-import 'package:nfc_in_flutter/nfc_in_flutter.dart';
+// import 'package:nfc_in_flutter/nfc_in_flutter.dart';
 import 'package:nfc_manager/nfc_manager.dart';
 
 class RegisterStudent extends StatefulWidget {
@@ -16,7 +16,7 @@ class RegisterStudent extends StatefulWidget {
 
 class _RegisterStudentState extends State<RegisterStudent> {
   ValueNotifier<dynamic> result = ValueNotifier(null);
-  StreamSubscription<NDEFMessage>? _stream;
+  // StreamSubscription<NDEFMessage>? _stream;
   final TextEditingController namaController = TextEditingController();
   final TextEditingController nimController = TextEditingController();
   late String valueNama;

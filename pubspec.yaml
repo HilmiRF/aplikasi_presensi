@@ -36,12 +36,13 @@ dependencies:
   cupertino_icons: ^1.0.2
   google_fonts: ^2.2.0
   fluttertoast: ^8.0.8
-  cloud_firestore: ^3.1.6
-  firebase_core: ^1.11.0
+  cloud_firestore: ^3.4.5
+  firebase_core: ^1.21.0
   nfc_in_flutter: ^2.0.5
   nfc_manager: ^3.1.0
-  firebase_database: ^7.1.1
-  firebase_auth: ^3.3.19
+  firebase_database: ^9.1.2
+  firebase_auth: ^3.6.4
+  firebase_storage: ^10.3.6
   provider: ^6.0.3
 
 
