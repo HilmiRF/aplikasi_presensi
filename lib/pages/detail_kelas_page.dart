@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+
 import 'package:aplikasi_presensi/matkul_data_api.dart';
 import 'package:aplikasi_presensi/pages/rekap_presensi_page.dart';
 import 'package:aplikasi_presensi/themes.dart';
@@ -16,12 +18,17 @@ class DetailKelas extends StatefulWidget {
 class _DetailKelasState extends State<DetailKelas> {
   final DataRepository repository = DataRepository();
   String namaKelas = '';
-  final Stream<QuerySnapshot> matkul =
-      FirebaseFirestore.instance.collection('matkul').snapshots();
+  var hari;
+  var waktuMulai;
+  var waktuSelesai;
+  var ruang;
+  var semester;
+  var tahun;
+
   @override
   void initState() {
     super.initState();
-    getMatkulList();
+    // getMatkulList();
   }
 
   Widget build(BuildContext context) {
@@ -35,8 +42,11 @@ class _DetailKelasState extends State<DetailKelas> {
           ),
           children: [
             title(),
-            detailMatkul(),
+            detailMatkulBaru(),
             rekapPresensiButton(),
+            SizedBox(
+              height: 16,
+            ),
           ],
         ),
       ),
@@ -90,7 +100,9 @@ class _DetailKelasState extends State<DetailKelas> {
     );
   }
 
+  // Widget detailMatkul lama tidak dipakai lagi
   Widget detailMatkul() {
+    // getMatkulList();
     return Container(
       margin: EdgeInsets.only(
         top: 28,
@@ -152,7 +164,7 @@ class _DetailKelasState extends State<DetailKelas> {
                 ),
               ),
               Text(
-                widget.post['hari_kelas'],
+                hari.toString(),
                 style: greyTextStyle.copyWith(
                   fontSize: 18,
                   fontWeight: semiBold,
@@ -236,6 +248,201 @@ class _DetailKelasState extends State<DetailKelas> {
     );
   }
 
+  Widget detailMatkulBaru() {
+    return Container(
+      child: StreamBuilder(
+        stream: FirebaseFirestore.instance
+            .collection('jadwal')
+            .where('id_matkul', isEqualTo: widget.post.id)
+            .snapshots(),
+        builder: ((
+          BuildContext context,
+          AsyncSnapshot<QuerySnapshot> snapshot,
+        ) {
+          if (snapshot.hasError) {
+            return Text('Something went wrong');
+          }
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Text('Loading');
+          }
+
+          final data = snapshot.requireData;
+
+          return ListView.builder(
+            scrollDirection: Axis.vertical,
+            shrinkWrap: true,
+            itemCount: data.size,
+            itemBuilder: (context, index) {
+              return Container(
+                margin: EdgeInsets.only(
+                  top: 28,
+                ),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Kode Mata Kuliah',
+                          style: blackTextStyle.copyWith(
+                            fontSize: 18,
+                            fontWeight: semiBold,
+                          ),
+                        ),
+                        Text(
+                          widget.post['kode_kelas'],
+                          style: greyTextStyle.copyWith(
+                            fontSize: 18,
+                            fontWeight: semiBold,
+                          ),
+                        )
+                      ],
+                    ),
+                    SizedBox(
+                      height: 16,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'SKS Mata Kuliah',
+                          style: blackTextStyle.copyWith(
+                            fontSize: 18,
+                            fontWeight: semiBold,
+                          ),
+                        ),
+                        Text(
+                          widget.post['sks_kelas'],
+                          style: greyTextStyle.copyWith(
+                            fontSize: 18,
+                            fontWeight: semiBold,
+                          ),
+                        )
+                      ],
+                    ),
+                    SizedBox(
+                      height: 16,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Hari Mata Kuliah',
+                          style: blackTextStyle.copyWith(
+                            fontSize: 18,
+                            fontWeight: semiBold,
+                          ),
+                        ),
+                        Text(
+                          data.docs[index]['hari'],
+                          style: greyTextStyle.copyWith(
+                            fontSize: 18,
+                            fontWeight: semiBold,
+                          ),
+                        )
+                      ],
+                    ),
+                    SizedBox(
+                      height: 16,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Waktu Mata Kuliah',
+                          style: blackTextStyle.copyWith(
+                            fontSize: 18,
+                            fontWeight: semiBold,
+                          ),
+                        ),
+                        Text(
+                          "${data.docs[index]['waktu_kelas_mulai']} - ${data.docs[index]['waktu_kelas_selesai']}",
+                          style: greyTextStyle.copyWith(
+                            fontSize: 18,
+                            fontWeight: semiBold,
+                          ),
+                        )
+                      ],
+                    ),
+                    SizedBox(
+                      height: 16,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Ruang Mata Kuliah',
+                          style: blackTextStyle.copyWith(
+                            fontSize: 18,
+                            fontWeight: semiBold,
+                          ),
+                        ),
+                        Text(
+                          data.docs[index]['ruang'],
+                          style: greyTextStyle.copyWith(
+                            fontSize: 18,
+                            fontWeight: semiBold,
+                          ),
+                        )
+                      ],
+                    ),
+                    SizedBox(
+                      height: 16,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Semester Mata Kuliah',
+                          style: blackTextStyle.copyWith(
+                            fontSize: 18,
+                            fontWeight: semiBold,
+                          ),
+                        ),
+                        Text(
+                          data.docs[index]['semester'],
+                          style: greyTextStyle.copyWith(
+                            fontSize: 18,
+                            fontWeight: semiBold,
+                          ),
+                        )
+                      ],
+                    ),
+                    SizedBox(
+                      height: 16,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Tahun Mata Kuliah',
+                          style: blackTextStyle.copyWith(
+                            fontSize: 18,
+                            fontWeight: semiBold,
+                          ),
+                        ),
+                        Text(
+                          data.docs[index]['tahun'],
+                          style: greyTextStyle.copyWith(
+                            fontSize: 18,
+                            fontWeight: semiBold,
+                          ),
+                        )
+                      ],
+                    ),
+                    SizedBox(
+                      height: 16,
+                    ),
+                  ],
+                ),
+              );
+            },
+          );
+        }),
+      ),
+    );
+  }
+
   Widget rekapPresensiButton() {
     return Container(
       width: double.infinity,
@@ -267,19 +474,26 @@ class _DetailKelasState extends State<DetailKelas> {
     );
   }
 
-  getMatkulList() async {
-    var collection = FirebaseFirestore.instance.collection('matkul');
-    var querySnapshot = await collection.get();
-    for (var queryDocumentSnapshot in querySnapshot.docs) {
-      Map<String, dynamic> data = queryDocumentSnapshot.data();
-      var namaMatkul = data['nama_kelas'];
-      var kodeMatkul = data['kode_kelas'];
-      var sksMatkul = data['sks_kelas'];
-      var waktuMulaiMatkul = data['waktu_kelas_mulai'];
-      var waktuSelesaiMatkul = data['waktu_kelas_selesai'];
-      var hariMatkul = data['hari_kelas'];
-      var jumlahMHS = data['jumlah_mhs'];
-      var ruangMatkul = data['ruang_kelas'];
-    }
-  }
+  // getMatkulList() async {
+  //   var collection = FirebaseFirestore.instance.collection('jadwal');
+  //   var docSnapshot =
+  //       await collection.where('id_matkul', isEqualTo: widget.post.id).get();
+  //   if (docSnapshot.exists) {
+  //     Map<String, dynamic> data = docSnapshot.data()!;
+
+  //     hari = data['hari'];
+  //     waktuMulai = data['waktu_kelas_mulai'];
+  //     waktuSelesai = data['waktu_kelas_selesai'];
+  //     ruang = data['ruang'];
+  //     semester = data['semester'];
+  //     tahun = data['tahun'];
+  //   }
+  //   print(hari);
+  //   print(waktuMulai);
+  //   print(waktuSelesai);
+  //   print(ruang);
+  //   print(semester);
+  //   print(tahun);
+  //   print("${widget.post.id} hehe");
+  // }
 }
