@@ -18,6 +18,7 @@ class DetailKelas extends StatefulWidget {
 class _DetailKelasState extends State<DetailKelas> {
   final DataRepository repository = DataRepository();
   String namaKelas = '';
+  String idKelas = '';
   var hari;
   var waktuMulai;
   var waktuSelesai;
@@ -55,6 +56,7 @@ class _DetailKelasState extends State<DetailKelas> {
 
   Widget title() {
     namaKelas = widget.post['nama_kelas'];
+    idKelas = widget.post['id'];
     return Container(
       margin: EdgeInsets.only(
         top: 38,
@@ -460,6 +462,7 @@ class _DetailKelasState extends State<DetailKelas> {
               MaterialPageRoute(
                 builder: (context) => RekapPresensiPage(
                   namaKelas: namaKelas,
+                  idKelas: idKelas,
                 ),
               ));
         },
