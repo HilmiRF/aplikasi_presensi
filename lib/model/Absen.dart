@@ -15,14 +15,14 @@ class Absen {
         'id': idPresensi,
         'id_jadwal': idJadwal,
         'id_matkul': idMatkul,
-        'test': presensi.toJson(),
+        'presensi': presensi.toJson(),
       };
 
   static Absen fromJson(Map<String, dynamic> json) => Absen(
         idPresensi: json['nama_mahasiswa'],
         idJadwal: json['id_jadwal'],
         idMatkul: json['id_matkul'],
-        presensi: Presensi.fromJson(json['test']),
+        presensi: Presensi.fromJson(json['presensi']),
       );
 }
 

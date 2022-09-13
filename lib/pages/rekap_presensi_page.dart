@@ -28,7 +28,7 @@ class _RekapPresensiPageState extends State<RekapPresensiPage> {
   late List presensi;
   String? value;
   String dropdownValue = '';
-  String valueSubstring = '';
+  String valueSubstring = '1';
 
   getDataFromDatabase() async {
     var value = FirebaseDatabase.instance.reference();
@@ -194,8 +194,8 @@ class _RekapPresensiPageState extends State<RekapPresensiPage> {
             return Text('Something Went Wrong!');
           } else if (snapshot.hasData) {
             final absen = snapshot.data!;
-            var userDocument = snapshot.data;
-            int arrayLength = userDocument![0].get('test').length;
+            // var userDocument = snapshot.data;
+            int arrayLength = absen[0].get('presensi').length;
             return ListView.builder(
               itemCount: arrayLength,
               // itemCount: snapshot.data!.length,
@@ -203,7 +203,7 @@ class _RekapPresensiPageState extends State<RekapPresensiPage> {
                 return Card(
                     child: ListTile(
                   title: Text(
-                    (snapshot.data![0]['test'][index]['nama_mahasiswa'])
+                    (snapshot.data![0]['presensi'][index]['nama_mahasiswa'])
                         .toString(),
                     style: blackTextStyle.copyWith(
                       fontSize: 16,
@@ -211,7 +211,7 @@ class _RekapPresensiPageState extends State<RekapPresensiPage> {
                     ),
                   ),
                   subtitle: Text(
-                    'NIM: ${(snapshot.data![0]['test'][index]['nim_mahasiswa']).toString()}, Waktu Absen: ${((snapshot.data![0]['test'][index]['Waktu Absen']) as Timestamp).toDate()}',
+                    'NIM: ${(snapshot.data![0]['presensi'][index]['nim_mahasiswa']).toString()}, Waktu Absen: ${((snapshot.data![0]['presensi'][index]['Waktu Absen']) as Timestamp).toDate()}',
                     style: greyTextStyle.copyWith(
                       fontSize: 12,
                       fontWeight: semiBold,
