@@ -10,7 +10,6 @@ import 'package:aplikasi_presensi/widgets/bottom_nav.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:nfc_in_flutter/nfc_in_flutter.dart';
 import 'package:nfc_manager/nfc_manager.dart';
 
 class SheetsPage extends StatefulWidget {
@@ -26,6 +25,7 @@ final myUid = user?.uid;
 var matkul;
 
 class _SheetsPageState extends State<SheetsPage> {
+  @override
   void initState() {
     super.initState();
     // myUid = getUid().toString();
@@ -33,7 +33,6 @@ class _SheetsPageState extends State<SheetsPage> {
     print(matkul);
   }
 
-  StreamSubscription<NDEFMessage>? _stream;
   final Stream<QuerySnapshot<Map<String, dynamic>>> kelas = FirebaseFirestore
       .instance
       .collection('matkul')
@@ -218,6 +217,7 @@ class _SheetsPageState extends State<SheetsPage> {
           stream: FirebaseFirestore.instance
               .collection('jadwal')
               .where('id_matkul', isEqualTo: dropdownValueID)
+              .where('uid_dosen', isEqualTo: myUid)
               .snapshots(),
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
@@ -487,80 +487,6 @@ class _SheetsPageState extends State<SheetsPage> {
     );
   }
 
-  void _startScanning() {
-    print(idPresensi);
-    print(sesi.toString());
-
-    // var presensi;
-    setState(() {
-      _stream = NFC
-          .readNDEF(alertMessage: "Custom message with readNDEF#alertMessage")
-          .listen((NDEFMessage message) {
-        if (message.isEmpty) {
-          print("Read empty NDEF message");
-          return;
-        }
-        print("Read NDEF message with ${message.records.length} records");
-        print('${message.data}, hehe');
-        // for (int i = 0; i < message.records.length; i++) {
-        //   final idEntries = <int, String>{i: message.data.toString()};
-        //   final namaEntries = <int, String>{i + 1: message.data[1].toString()};
-        //   final nimEntries = <int, String>{i + 2: message.data[2].toString()};
-        //   presensi.addEntries(idEntries.entries);
-        //   presensi.addEntries(namaEntries.entries);
-        //   presensi.addEntries(nimEntries.entries);
-        // }
-        for (NDEFRecord record in message.records) {
-          setState(() {
-            isiNFC.addAll({record.data});
-            final waktu = <String, dynamic>{'Waktu Absen': Timestamp.now()};
-            // isiNFCWaktu.addAll(record.data, waktu);
-            // presensi.addAll([isiNFC, isiNFCWaktu]);
-            FirebaseFirestore.instance
-                .collection('presensi')
-                .doc(idPresensi)
-                .set({'presensi': presensi, 'Waktu Absen': Timestamp.now()},
-                    SetOptions(merge: true)).then((value) {});
-          });
-          // print(
-          //     "Record '${record.id ?? "[NO ID]"}' with TNF '${record.tnf}', type '${record.type}', payload '${record.payload}' and data '${record.data}' and language code '${record.languageCode}'");
-          // FirebaseFirestore.instance.collection('presensi').doc(idPresensi).set(
-          //     {'Nama & NIM': record.data, 'Waktu Absen': Timestamp.now()},
-          //     SetOptions(merge: true)).then((value) {});
-          // print(record.data);
-        }
-        print('$presensi, final');
-      }, onError: (error) {
-        setState(() {
-          _stream = null;
-        });
-        if (error is NFCUserCanceledSessionException) {
-          print("user canceled");
-        } else if (error is NFCSessionTimeoutException) {
-          print("session timed out");
-        } else {
-          print("error: $error");
-        }
-      }, onDone: () {
-        setState(() {
-          _stream = null;
-        });
-      });
-    });
-  }
-
-  // void _tagRead() {
-  //   NfcManager.instance.startSession(onDiscovered: (NfcTag tag) async {
-  //     final ndef = Ndef.from(tag.data);
-  //     print(ndef);
-  //     // result.value = tag.data;
-  //     // FirebaseFirestore.instance.collection(dropdownValue).doc().set(
-  //     //   {'Nama & NIM': tag.data, 'Waktu Absen': Timestamp.now()},
-  //     // SetOptions(merge: true)).then((value) {});
-  //     // NfcManager.instance.stopSession();
-  //   });
-  // }
-
   void _tagRead() {
     NfcManager.instance.startSession(onDiscovered: (NfcTag tag) async {
       // Read NFC ID
@@ -643,10 +569,6 @@ class _SheetsPageState extends State<SheetsPage> {
 
   void _stopScanning() {
     NfcManager.instance.stopSession();
-    _stream?.cancel();
-    setState(() {
-      _stream = null;
-    });
   }
 
   void getDropDownItem() {

@@ -2,6 +2,7 @@
 
 import 'package:aplikasi_presensi/authentication_services.dart';
 import 'package:aplikasi_presensi/widgets/bottom_nav.dart';
+import 'package:aplikasi_presensi/pages/login_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -18,8 +19,8 @@ class LecturerPage extends StatefulWidget {
 }
 
 final FirebaseAuth auth = FirebaseAuth.instance;
-final User? user = auth.currentUser;
-final myUid = user?.uid;
+User? user;
+var myUid;
 // String myUid = '';
 String imageUrl = '';
 String namaDosen = '';
@@ -27,9 +28,16 @@ String namaDosen = '';
 class _LecturerPageState extends State<LecturerPage> {
   void initState() {
     super.initState();
+    FirebaseAuth.instance.authStateChanges().listen((firebaseUser) {
+      user = auth.currentUser;
+      myUid = user?.uid;
+      // do whatever you want based on the firebaseUser state
+      imageUrl = getImageUrl().toString();
+      namaDosen = getNamaDosen().toString();
+    });
     // myUid = getUid().toString();
-    imageUrl = getImageUrl().toString();
-    namaDosen = getNamaDosen().toString();
+    // imageUrl = getImageUrl().toString();
+    // namaDosen = getNamaDosen().toString();
   }
 
   FirebaseStorage storage = FirebaseStorage.instance;
@@ -201,9 +209,16 @@ class _LecturerPageState extends State<LecturerPage> {
         color: kBlackColor,
       ),
       child: TextButton(
-        onPressed: () {
+        onPressed: () async {
+          await FirebaseAuth.instance.signOut();
+          if (FirebaseAuth.instance.currentUser == null) {
+            Navigator.pushNamedAndRemoveUntil(
+                context, '/login', (route) => false);
+          }
           // await FirebaseAuth.instance.signOut();
-          context.read<AuthenticationService>().signOut();
+          // handleSignOut();
+          // Navigator.pop(context);
+          // context.read<AuthenticationService>().signOut();
         },
         child: Text(
           'Sign Out',

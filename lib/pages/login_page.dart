@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:aplikasi_presensi/authentication_services.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:aplikasi_presensi/themes.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -221,10 +222,12 @@ class _LoginPageState extends State<LoginPage> {
       ),
       child: TextButton(
         onPressed: () {
-          context.read<AuthenticationService>().signIn(
-                email: emailController.text,
-                password: passwordController.text,
-              );
+          loginWithEmailAndPassword(
+              emailController.text, passwordController.text);
+          // context.read<AuthenticationService>().signIn(
+          //       email: emailController.text,
+          //       password: passwordController.text,
+          //     );
         },
         child: isLoading
             ? CircularProgressIndicator(
@@ -257,5 +260,48 @@ class _LoginPageState extends State<LoginPage> {
         ),
       ),
     );
+  }
+
+  Future<String?> loginWithEmailAndPassword(
+      String email, String password) async {
+    try {
+      final authResult = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: email, password: password);
+      if (authResult.user != null) {
+        Navigator.of(context).pushReplacementNamed('/lecturer');
+      }
+      return 'Signed in';
+    } on FirebaseAuthException catch (e) {
+      print(e.toString());
+      if (e.code == 'wrong-password') {
+        Fluttertoast.showToast(
+          msg: "Wrong Password",
+          toastLength: Toast.LENGTH_SHORT,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.black,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+      } else if (e.code == 'user-not-found') {
+        Fluttertoast.showToast(
+          msg: "User not found",
+          toastLength: Toast.LENGTH_SHORT,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.black,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+      } else if (e.code == 'invalid-email') {
+        Fluttertoast.showToast(
+          msg: "Invalid E-Mail",
+          toastLength: Toast.LENGTH_SHORT,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.black,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+      }
+      return 'Not Signed in';
+    }
   }
 }
