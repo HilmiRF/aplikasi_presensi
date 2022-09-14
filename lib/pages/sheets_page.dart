@@ -1,4 +1,4 @@
-// ignore_for_file: import_of_legacy_library_into_null_safe, prefer_const_constructors, prefer_typing_uninitialized_variables, unnecessary_string_interpolations
+// ignore_for_file: import_of_legacy_library_into_null_safe, prefer_const_constructors, prefer_typing_uninitialized_variables, unnecessary_string_interpolations, prefer_collection_literals, unnecessary_new
 
 import 'dart:async';
 import 'dart:isolate';
@@ -10,18 +10,17 @@ import 'package:aplikasi_presensi/widgets/bottom_nav.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:nfc_manager/nfc_manager.dart';
 
 class SheetsPage extends StatefulWidget {
-  const SheetsPage({Key? key}) : super(key: key);
+  final String myUid;
+  const SheetsPage({Key? key, required this.myUid}) : super(key: key);
 
   @override
   State<SheetsPage> createState() => _SheetsPageState();
 }
 
-final FirebaseAuth auth = FirebaseAuth.instance;
-final User? user = auth.currentUser;
-final myUid = user?.uid;
 var matkul;
 
 class _SheetsPageState extends State<SheetsPage> {
@@ -217,7 +216,7 @@ class _SheetsPageState extends State<SheetsPage> {
           stream: FirebaseFirestore.instance
               .collection('jadwal')
               .where('id_matkul', isEqualTo: dropdownValueID)
-              .where('uid_dosen', isEqualTo: myUid)
+              .where('uid_dosen', isEqualTo: widget.myUid)
               .snapshots(),
           builder: (context, snapshot) {
             if (!snapshot.hasData) {
@@ -437,12 +436,22 @@ class _SheetsPageState extends State<SheetsPage> {
                                 onPressed: () async {
                                   valueNama1 = namaController.text;
                                   valueNIM1 = nimController.text;
+                                  var mapManual = new Map<String, dynamic>();
+                                  mapManual["presensi"] = [
+                                    {
+                                      "id_mhs": 'PRESENSI MANUAL',
+                                      "nama_mahasiswa": valueNama1,
+                                      "nim_mahasiswa": valueNIM1,
+                                      "Waktu Absen": Timestamp.now(),
+                                    },
+                                  ];
                                   FirebaseFirestore.instance
-                                      .collection(dropdownValue)
-                                      .doc()
+                                      .collection('presensi')
+                                      .doc(idPresensi)
                                       .set({
-                                    'Nama & NIM': valueNama1 + ', ' + valueNIM1,
-                                    'Waktu Absen': Timestamp.now()
+                                    'presensi': FieldValue.arrayUnion(
+                                      mapManual["presensi"],
+                                    )
                                   }, SetOptions(merge: true)).then((value) {});
                                   Navigator.of(context).pop();
                                 },
@@ -539,6 +548,14 @@ class _SheetsPageState extends State<SheetsPage> {
           )
         }, SetOptions(merge: true)).then((value) {});
       } else {
+        Fluttertoast.showToast(
+          msg: "Kartu Tidak Terdaftar",
+          toastLength: Toast.LENGTH_SHORT,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.black,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
         print('Kartu Tidak Terdaftar');
       }
 
@@ -620,6 +637,26 @@ class _SheetsPageState extends State<SheetsPage> {
     print('$sesi hehe');
     return sesi;
   }
+
+  Future<List<Object>> getMatkul() async {
+    await FirebaseFirestore.instance
+        .collection('jadwal')
+        .where('uid_dosen', isEqualTo: widget.myUid)
+        .get()
+        .then((QuerySnapshot querySnapshot) {
+      matkul = querySnapshot.docs.map((doc) => doc['id_matkul']).toList();
+      // querySnapshot.docs.forEach((doc) {
+      //   // matkul = matkul.push(doc['id_matkul']);
+      //   print(doc['id_matkul']);
+      //   // setState(() {
+      //   //   matkul = doc['id_matkul'];
+      //   // });
+      // });
+    });
+    print(matkul);
+    print(myUid);
+    return matkul;
+  }
 }
 
 // Future<List> getMatkul() async {
@@ -640,22 +677,4 @@ class _SheetsPageState extends State<SheetsPage> {
 //   return matkul;
 // }
 
-Future<List<Object>> getMatkul() async {
-  await FirebaseFirestore.instance
-      .collection('jadwal')
-      .where('uid_dosen', isEqualTo: myUid)
-      .get()
-      .then((QuerySnapshot querySnapshot) {
-    matkul = querySnapshot.docs.map((doc) => doc['id_matkul']).toList();
-    // querySnapshot.docs.forEach((doc) {
-    //   // matkul = matkul.push(doc['id_matkul']);
-    //   print(doc['id_matkul']);
-    //   // setState(() {
-    //   //   matkul = doc['id_matkul'];
-    //   // });
-    // });
-  });
-  print(matkul);
-  print(myUid);
-  return matkul;
-}
+

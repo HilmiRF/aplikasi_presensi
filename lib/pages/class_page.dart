@@ -10,15 +10,13 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 class ClassPage extends StatefulWidget {
-  const ClassPage({Key? key}) : super(key: key);
+  final String myUid;
+  const ClassPage({Key? key, required this.myUid}) : super(key: key);
 
   @override
   State<ClassPage> createState() => _ClassPageState();
 }
 
-final FirebaseAuth auth = FirebaseAuth.instance;
-final User? user = auth.currentUser;
-final myUid = user?.uid;
 // List<Object> matkul;
 var matkul;
 // late List mappedMatkul;
@@ -28,6 +26,7 @@ class _ClassPageState extends State<ClassPage> {
   void initState() {
     // myUid = getUid().toString();
     matkul = getMatkul();
+    print(myUid);
     print(matkul);
     super.initState();
   }
@@ -219,7 +218,7 @@ class _ClassPageState extends State<ClassPage> {
   Future<List<Object>> getMatkul() async {
     await FirebaseFirestore.instance
         .collection('jadwal')
-        .where('uid_dosen', isEqualTo: myUid)
+        .where('uid_dosen', isEqualTo: widget.myUid)
         .get()
         .then((QuerySnapshot querySnapshot) {
       matkul = querySnapshot.docs.map((doc) => doc['id_matkul']).toList();

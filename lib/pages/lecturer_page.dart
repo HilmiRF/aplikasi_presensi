@@ -12,7 +12,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import '../themes.dart';
 
 class LecturerPage extends StatefulWidget {
-  const LecturerPage({Key? key}) : super(key: key);
+  const LecturerPage({Key? key, User? user}) : super(key: key);
 
   @override
   State<LecturerPage> createState() => _LecturerPageState();

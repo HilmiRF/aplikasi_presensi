@@ -1,4 +1,9 @@
+// ignore_for_file: prefer_const_constructors
+
+import 'package:aplikasi_presensi/pages/class_page.dart';
+import 'package:aplikasi_presensi/pages/sheets_page.dart';
 import 'package:aplikasi_presensi/themes.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class BottomNav extends StatefulWidget {
@@ -9,8 +14,23 @@ class BottomNav extends StatefulWidget {
 }
 
 int currentIndex = 2;
+final FirebaseAuth auth = FirebaseAuth.instance;
+User? user;
+var myUid;
 
 class _BottomNavState extends State<BottomNav> {
+  void initState() {
+    super.initState();
+    FirebaseAuth.instance.authStateChanges().listen((firebaseUser) {
+      user = auth.currentUser;
+      myUid = user?.uid;
+      print(myUid);
+      // do whatever you want based on the firebaseUser state
+    });
+    // myUid = getUid().toString();
+    // imageUrl = getImageUrl().toString();
+    // namaDosen = getNamaDosen().toString();
+  }
   // void _onItemTapped(int index) {
   //   setState(() {
   //     currentIndex = index;
@@ -42,7 +62,7 @@ class _BottomNavState extends State<BottomNav> {
             icon: currentIndex == 2
                 ? Image.asset('assets/student_active.png', width: 24)
                 : Image.asset('assets/student.png', width: 24),
-            label: 'student',
+            label: 'lecturer',
           ),
         ],
         currentIndex: currentIndex,
@@ -52,12 +72,24 @@ class _BottomNavState extends State<BottomNav> {
 
           switch (value) {
             case 0:
-              Navigator.pushNamedAndRemoveUntil(
-                  context, '/sheet', (route) => false);
+              Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(
+                    builder: (BuildContext context) => SheetsPage(
+                      myUid: myUid,
+                    ),
+                  ),
+                  (route) => false);
               break;
             case 1:
-              Navigator.pushNamedAndRemoveUntil(
-                  context, '/class', (route) => false);
+              Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(
+                    builder: (BuildContext context) => ClassPage(
+                      myUid: myUid,
+                    ),
+                  ),
+                  (route) => false);
               break;
             case 2:
               Navigator.pushNamedAndRemoveUntil(
