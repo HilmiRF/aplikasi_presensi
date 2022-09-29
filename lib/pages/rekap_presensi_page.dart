@@ -186,13 +186,22 @@ class _RekapPresensiPageState extends State<RekapPresensiPage> {
         borderRadius: BorderRadius.circular(14),
         color: kLineDarkColor,
       ),
-      margin: EdgeInsets.only(top: 30),
+      margin: EdgeInsets.only(top: 30, bottom: 30),
       padding: EdgeInsets.all(8),
       child: FutureBuilder(
         future: readAbsen(),
         builder: (context, AsyncSnapshot<List<DocumentSnapshot>> snapshot) {
           if (snapshot.hasError) {
             return Text('Something Went Wrong!');
+          } else if (snapshot.hasData && snapshot.data!.isEmpty) {
+            return Center(
+                child: Text(
+              'Belum Ada Data Presensi',
+              style: blackTextStyle.copyWith(
+                fontSize: 16,
+                fontWeight: bold,
+              ),
+            ));
           } else if (snapshot.hasData) {
             final absen = snapshot.data!;
             // var userDocument = snapshot.data;

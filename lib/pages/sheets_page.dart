@@ -353,6 +353,7 @@ class _SheetsPageState extends State<SheetsPage> {
                       showDialog(
                         context: context,
                         builder: (_) => AlertDialog(
+                          scrollable: true,
                           backgroundColor: kLineDarkColor,
                           title: Text(
                             "Add Manually",
@@ -547,19 +548,25 @@ class _SheetsPageState extends State<SheetsPage> {
             map["presensi"],
           )
         }, SetOptions(merge: true)).then((value) {});
+        Fluttertoast.showToast(
+          msg: "Selamat Datang! $namaTrim",
+          toastLength: Toast.LENGTH_SHORT,
+          timeInSecForIosWeb: 1,
+          backgroundColor: kToscaColor,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
       } else {
         Fluttertoast.showToast(
           msg: "Kartu Tidak Terdaftar",
           toastLength: Toast.LENGTH_SHORT,
           timeInSecForIosWeb: 1,
-          backgroundColor: Colors.black,
+          backgroundColor: kRedColor,
           textColor: Colors.white,
           fontSize: 16.0,
         );
         print('Kartu Tidak Terdaftar');
       }
-
-      //
 
       print(idTrim);
       print(namaTrim);

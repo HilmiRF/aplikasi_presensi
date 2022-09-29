@@ -22,20 +22,25 @@ var matkul;
 // late List mappedMatkul;
 
 class _ClassPageState extends State<ClassPage> {
+  late Stream<QuerySnapshot<Map<String, dynamic>>> kelas;
   @override
   void initState() {
     // myUid = getUid().toString();
-    matkul = getMatkul();
+    WidgetsBinding.instance.addPostFrameCallback((_) => getMatkul());
     print(myUid);
     print(matkul);
+    kelas = FirebaseFirestore.instance
+        .collection('matkul')
+        .where(FieldPath.documentId, whereIn: matkul)
+        .snapshots();
     super.initState();
   }
 
-  final Stream<QuerySnapshot<Map<String, dynamic>>> kelas = FirebaseFirestore
-      .instance
-      .collection('matkul')
-      .where(FieldPath.documentId, whereIn: matkul)
-      .snapshots();
+  // final Stream<QuerySnapshot<Map<String, dynamic>>> kelas = FirebaseFirestore
+  //     .instance
+  //     .collection('matkul')
+  //     .where(FieldPath.documentId, whereIn: matkul)
+  //     .snapshots();
 
   navigateToDetail(DocumentSnapshot post) {
     Navigator.push(
