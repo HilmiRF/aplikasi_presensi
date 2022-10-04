@@ -1,12 +1,20 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, avoid_print
 
+// import 'dart:html';
+import 'dart:io';
+
 import 'package:aplikasi_presensi/model/Absen.dart';
+import 'package:aplikasi_presensi/pages/class_page.dart';
+import 'package:aplikasi_presensi/pages/lecturer_page.dart';
 import 'package:aplikasi_presensi/pages/sheets_page.dart';
 import 'package:aplikasi_presensi/widgets/bottom_nav.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_database/firebase_database.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:aplikasi_presensi/pages/detail_kelas_page.dart';
+import 'package:csv/csv.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../themes.dart';
 
@@ -30,17 +38,18 @@ class _RekapPresensiPageState extends State<RekapPresensiPage> {
   String? value;
   String dropdownValue = '';
   String valueSubstring = '1';
+  late List<DocumentSnapshot<Object?>> absens = [];
 
-  getDataFromDatabase() async {
-    var value = FirebaseDatabase.instance.reference();
-    var getValue = await value.child(namaKelasValue).once();
-    return getValue;
-  }
+  // getDataFromDatabase() async {
+  //   var value = FirebaseDatabase.instance.reference();
+  //   var getValue = await value.child(namaKelasValue).once();
+  //   return getValue;
+  // }
 
   @override
   void initState() {
     super.initState();
-    getDataFromDatabase();
+    // getDataFromDatabase();
     readAbsen();
     print(idKelasValue);
   }
@@ -58,6 +67,7 @@ class _RekapPresensiPageState extends State<RekapPresensiPage> {
             title(),
             dropdownSesi(),
             tabelBaru(),
+            exportCSV(),
           ],
         ),
       ),
@@ -186,7 +196,7 @@ class _RekapPresensiPageState extends State<RekapPresensiPage> {
         borderRadius: BorderRadius.circular(14),
         color: kLineDarkColor,
       ),
-      margin: EdgeInsets.only(top: 30, bottom: 30),
+      margin: EdgeInsets.only(top: 30),
       padding: EdgeInsets.all(8),
       child: FutureBuilder(
         future: readAbsen(),
@@ -203,9 +213,10 @@ class _RekapPresensiPageState extends State<RekapPresensiPage> {
               ),
             ));
           } else if (snapshot.hasData) {
-            final absen = snapshot.data!;
+            absens = snapshot.data!;
+            print(absens);
             // var userDocument = snapshot.data;
-            int arrayLength = absen[0].get('presensi').length;
+            int arrayLength = absens[0].get('presensi').length;
             return ListView.builder(
               itemCount: arrayLength,
               // itemCount: snapshot.data!.length,
@@ -240,6 +251,31 @@ class _RekapPresensiPageState extends State<RekapPresensiPage> {
             );
           }
         },
+      ),
+    );
+  }
+
+  Widget exportCSV() {
+    return Container(
+      width: double.infinity,
+      height: 56,
+      margin: EdgeInsets.only(top: 30, bottom: 30),
+      padding: EdgeInsets.only(),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(14),
+        color: kBlackColor,
+      ),
+      child: TextButton(
+        onPressed: () {
+          generateCsv();
+        },
+        child: Text(
+          'Export to CSV',
+          style: whiteTextStyle.copyWith(
+            fontWeight: FontWeight.w600,
+            fontSize: 18,
+          ),
+        ),
       ),
     );
   }
@@ -398,6 +434,44 @@ class _RekapPresensiPageState extends State<RekapPresensiPage> {
     //     snapshot.docs.map((doc) => Absen.fromJson(doc.data())).toList());
     print(qn.docs);
     return qn.docs;
+  }
+
+  generateCsv() async {
+    namaKelasValue = widget.namaKelas;
+    List<List<dynamic>> datas = [
+      ["No.", "id_mhs", "nim_mahasiswa", "nama_mahasiswa", "Waktu Absen"],
+    ];
+    for (int i = 0; i < absens[0]["presensi"].length; i++) {
+      List<dynamic> data = <dynamic>[];
+      data.add((i + 1).toString());
+      data.add(absens[0]["presensi"][i]["id_mhs"]);
+      data.add(absens[0]['presensi'][i]['nim_mahasiswa']);
+      data.add(absens[0]['presensi'][i]['nama_mahasiswa']);
+      data.add((absens[0]['presensi'][i]['Waktu Absen'] as Timestamp).toDate());
+      datas.add(data);
+    }
+    if (await Permission.storage.request().isGranted) {
+      String dir = (await getExternalStorageDirectory())!.path +
+          "/${namaKelasValue}_$valueSubstring.csv";
+      String file = "$dir";
+
+      File f = new File(file);
+
+      String csv = const ListToCsvConverter().convert(datas);
+      f.writeAsString(csv);
+    } else {
+      Map<Permission, PermissionStatus> statuses = await [
+        Permission.storage,
+      ].request();
+    }
+    Fluttertoast.showToast(
+      msg: "Export ke csv berhasil",
+      toastLength: Toast.LENGTH_SHORT,
+      timeInSecForIosWeb: 1,
+      backgroundColor: Colors.black,
+      textColor: Colors.white,
+      fontSize: 16.0,
+    );
   }
 }
 
