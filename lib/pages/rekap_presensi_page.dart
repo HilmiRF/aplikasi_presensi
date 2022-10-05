@@ -37,7 +37,7 @@ class _RekapPresensiPageState extends State<RekapPresensiPage> {
   late List presensi;
   String? value;
   String dropdownValue = '';
-  String valueSubstring = '1';
+  String valueSubstring = '';
   late List<DocumentSnapshot<Object?>> absens = [];
 
   // getDataFromDatabase() async {
@@ -439,6 +439,7 @@ class _RekapPresensiPageState extends State<RekapPresensiPage> {
   generateCsv() async {
     namaKelasValue = widget.namaKelas;
     List<List<dynamic>> datas = [
+      ["catatan Sesi", absens[0]['catatan_sesi']],
       ["No.", "id_mhs", "nim_mahasiswa", "nama_mahasiswa", "Waktu Absen"],
     ];
     for (int i = 0; i < absens[0]["presensi"].length; i++) {

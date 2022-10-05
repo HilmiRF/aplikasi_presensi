@@ -157,9 +157,11 @@ class _ClassPageState extends State<ClassPage> {
                     title: TextButton(
                       child: Text(
                         data.docs[index]['nama_kelas'],
+                        textAlign: TextAlign.center,
                         style: blackTextStyle.copyWith(
                           fontSize: 16,
                           fontWeight: semiBold,
+                          // styling benerin
                         ),
                       ),
                       onPressed: () {

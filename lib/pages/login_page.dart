@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:aplikasi_presensi/authentication_services.dart';
+import 'package:aplikasi_presensi/pages/class_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:aplikasi_presensi/themes.dart';
@@ -13,6 +14,10 @@ class LoginPage extends StatefulWidget {
   @override
   State<LoginPage> createState() => _LoginPageState();
 }
+
+final FirebaseAuth auth = FirebaseAuth.instance;
+User? user;
+var myUid;
 
 class _LoginPageState extends State<LoginPage> {
   late FToast fToast;
@@ -268,7 +273,20 @@ class _LoginPageState extends State<LoginPage> {
       final authResult = await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
       if (authResult.user != null) {
-        Navigator.of(context).pushReplacementNamed('/lecturer');
+        FirebaseAuth.instance.authStateChanges().listen((firebaseUser) {
+          user = auth.currentUser;
+          myUid = user?.uid;
+          print(myUid);
+          // do whatever you want based on the firebaseUser state
+        });
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+              builder: (BuildContext context) => ClassPage(
+                myUid: myUid,
+              ),
+            ),
+            (route) => false);
       }
       return 'Signed in';
     } on FirebaseAuthException catch (e) {

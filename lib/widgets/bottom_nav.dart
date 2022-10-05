@@ -13,7 +13,7 @@ class BottomNav extends StatefulWidget {
   _BottomNavState createState() => _BottomNavState();
 }
 
-int currentIndex = 2;
+int currentIndex = 1;
 final FirebaseAuth auth = FirebaseAuth.instance;
 User? user;
 var myUid;
@@ -25,7 +25,6 @@ class _BottomNavState extends State<BottomNav> {
       user = auth.currentUser;
       myUid = user?.uid;
       print(myUid);
-      // do whatever you want based on the firebaseUser state
     });
     // myUid = getUid().toString();
     // imageUrl = getImageUrl().toString();
@@ -69,7 +68,6 @@ class _BottomNavState extends State<BottomNav> {
         type: BottomNavigationBarType.fixed,
         onTap: (value) {
           currentIndex = value;
-
           switch (value) {
             case 0:
               Navigator.pushAndRemoveUntil(

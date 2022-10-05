@@ -32,48 +32,47 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        Provider<AuthenticationService>(
-          create: (_) => AuthenticationService(FirebaseAuth.instance),
-        ),
-        StreamProvider(
-          create: (context) =>
-              context.read<AuthenticationService>().authStateChanges,
-          initialData: null,
-        ),
-      ],
-      child: MaterialApp(
-        // home: AuthenticationWrapper(),
-        debugShowCheckedModeBanner: false,
-        routes: {
-          '/': (context) => SplashScreen(),
-          '/authentication': (context) => AuthenticationWrapper(),
-          '/login': (context) => LoginPage(),
-          '/student': (context) => StudentPage(),
-          // '/class': (context) => ClassPage(),
-          // '/sheet': (context) => SheetsPage(),
-          '/addStudent': (context) => AddStudent(),
-          '/registerStudent': (context) => RegisterStudent(),
-          '/addClass': (context) => AddClass(),
-          '/lecturer': (context) => LecturerPage(),
-          // '/rekap' : (context) => RekapPresensiPage(),
-        },
-      ),
+    return MaterialApp(
+      // home: AuthenticationWrapper(),
+      debugShowCheckedModeBanner: false,
+      routes: {
+        '/': (context) => SplashScreen(),
+        // '/authentication': (context) => AuthenticationWrapper(),
+        '/login': (context) => LoginPage(),
+        '/student': (context) => StudentPage(),
+        // '/class': (context) => ClassPage(),
+        // '/sheet': (context) => SheetsPage(),
+        '/addStudent': (context) => AddStudent(),
+        '/registerStudent': (context) => RegisterStudent(),
+        '/addClass': (context) => AddClass(),
+        '/lecturer': (context) => LecturerPage(),
+        // '/rekap' : (context) => RekapPresensiPage(),
+      },
     );
   }
 }
 
-class AuthenticationWrapper extends StatelessWidget {
-  const AuthenticationWrapper({Key? key}) : super(key: key);
+// class AuthenticationWrapper extends StatelessWidget {
+//   const AuthenticationWrapper({Key? key}) : super(key: key);
 
-  @override
-  Widget build(BuildContext context) {
-    final firebaseUser = context.watch<User>();
+//   @override
+//   Widget build(BuildContext context) {
+//     final FirebaseAuth auth = FirebaseAuth.instance;
+//     User? user;
+//     var myUid;
 
-    if (firebaseUser != null) {
-      return LecturerPage();
-    }
-    return LoginPage();
-  }
-}
+//     FirebaseAuth.instance.authStateChanges().listen((firebaseUser) {
+//       user = auth.currentUser;
+//       myUid = user?.uid;
+//       print(myUid);
+//       // do whatever you want based on the firebaseUser state
+//     });
+
+//     final firebaseUser = context.watch<User>();
+
+//     if (firebaseUser != null) {
+//       return ClassPage(myUid: myUid);
+//     }
+//     return LoginPage();
+//   }
+// }

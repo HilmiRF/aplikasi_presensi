@@ -15,7 +15,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     Timer(Duration(seconds: 3), () {
-      Navigator.pushNamedAndRemoveUntil(context, '/authentication', (route) => false);
+      Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
     });
     // TODO: implement initState
     super.initState();

@@ -24,6 +24,7 @@ class SheetsPage extends StatefulWidget {
 var matkul;
 
 class _SheetsPageState extends State<SheetsPage> {
+  final catatanController = TextEditingController(text: '');
   @override
   void initState() {
     super.initState();
@@ -65,7 +66,8 @@ class _SheetsPageState extends State<SheetsPage> {
   Map isiNFCWaktu = {};
   List isiNFC = [];
   List presensi = [];
-  bool cekID = false;
+  bool cekID1 = false;
+  // bool cekID2 = false;
   final TextEditingController namaController = TextEditingController();
   final TextEditingController nimController = TextEditingController();
 
@@ -83,6 +85,7 @@ class _SheetsPageState extends State<SheetsPage> {
             title(),
             chooseClass(),
             chooseHari(),
+            noteKelas(),
             startAttendance(),
           ],
         ),
@@ -99,7 +102,7 @@ class _SheetsPageState extends State<SheetsPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Sheets\nPage',
+            'Attendance\nPage',
             style: blackTextStyle.copyWith(
               fontSize: 20,
               fontWeight: FontWeight.bold,
@@ -272,6 +275,34 @@ class _SheetsPageState extends State<SheetsPage> {
     );
   }
 
+  Widget noteKelas() {
+    return Container(
+      margin: EdgeInsets.only(top: 28),
+      padding: EdgeInsets.symmetric(
+        vertical: 18,
+        horizontal: 18,
+      ),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(14),
+        color: kWhiteColor,
+      ),
+      child: TextFormField(
+        style: blackTextStyle.copyWith(
+          fontSize: 18,
+          fontWeight: semiBold,
+        ),
+        controller: catatanController,
+        decoration: InputDecoration.collapsed(
+          hintText: 'Isi Catatan Kelas',
+          hintStyle: greyTextStyle.copyWith(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget startAttendance() {
     return Container(
       width: double.infinity,
@@ -288,6 +319,7 @@ class _SheetsPageState extends State<SheetsPage> {
               FirebaseFirestore.instance.collection('presensi').doc();
           docPresensi.set({
             'id': docPresensi.id,
+            'catatan_sesi': catatanController.text,
             'id_jadwal': dropdownDayValueID,
             'id_matkul': dropdownValueID,
             'sesi': (sesi + 1).toString(),
@@ -539,10 +571,12 @@ class _SheetsPageState extends State<SheetsPage> {
       ];
 
       // function untuk cek ID kalau true store di firestore kalau false show dialog kartu tidak terdaftar.
-      cekID = await cekMahasiswa();
+      cekID1 = await cekMahasiswa();
+      // cekID2 = await cekDobelPresensi();
+
       // print(cekID.toString());
 
-      if (cekID == true) {
+      if (cekID1 == true) {
         FirebaseFirestore.instance.collection('presensi').doc(idPresensi).set({
           'presensi': FieldValue.arrayUnion(
             map["presensi"],
@@ -574,6 +608,21 @@ class _SheetsPageState extends State<SheetsPage> {
     });
   }
 
+  // Future<bool> cekDobelPresensi() async {
+  //   await FirebaseFirestore.instance
+  //       .collection('presensi')
+  //       .where('id', isEqualTo: idPresensi)
+  //       // .where('presensi', arrayContains: idTrim)
+  //       .get()
+  //       .then((QuerySnapshot querySnapshot) {
+  //     querySnapshot.docs.forEach((doc) {
+  //       print(doc["presensi"][0]["id_mhs"]);
+  //     });
+  //   });
+  //   print(cekID2);
+  //   return cekID2;
+  // }
+
   Future<bool> cekMahasiswa() async {
     await FirebaseFirestore.instance
         .collection('jadwal')
@@ -582,13 +631,13 @@ class _SheetsPageState extends State<SheetsPage> {
         .get()
         .then((value) {
       if (value.docs.isEmpty) {
-        cekID = false;
+        cekID1 = false;
       } else {
-        cekID = true;
+        cekID1 = true;
       }
     });
-    print(cekID);
-    return cekID;
+    print(cekID1);
+    return cekID1;
   }
 
   void _stopScanning() {
