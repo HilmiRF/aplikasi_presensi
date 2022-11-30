@@ -18,6 +18,7 @@ class ClassPage extends StatefulWidget {
 }
 
 // List<Object> matkul;
+var matkuls;
 var matkul;
 // late List mappedMatkul;
 
@@ -228,7 +229,7 @@ class _ClassPageState extends State<ClassPage> {
         .where('uid_dosen', isEqualTo: widget.myUid)
         .get()
         .then((QuerySnapshot querySnapshot) {
-      matkul = querySnapshot.docs.map((doc) => doc['id_matkul']).toList();
+      matkuls = querySnapshot.docs.map((doc) => doc['id_matkul']).toList();
       // querySnapshot.docs.forEach((doc) {
       //   // matkul = matkul.push(doc['id_matkul']);
       //   print(doc['id_matkul']);
@@ -237,6 +238,7 @@ class _ClassPageState extends State<ClassPage> {
       //   // });
       // });
     });
+    matkul = matkuls.toSet().toList();
     print(matkul);
     print(myUid);
     return matkul;

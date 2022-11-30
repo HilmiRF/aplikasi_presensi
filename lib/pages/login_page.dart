@@ -48,7 +48,7 @@ class _LoginPageState extends State<LoginPage> {
             title(),
             emailInput(),
             passwordInput(),
-            rememberCheckbox(),
+            // rememberCheckbox(),
             loginButton(),
           ],
         ),
